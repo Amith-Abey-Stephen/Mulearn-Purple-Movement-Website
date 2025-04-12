@@ -59,14 +59,13 @@ const CountDownTimer = ({ endDate }: { endDate: Date }) => {
                 </div>
 
                 {/* BACK SIDE - REGISTER FORM */}
-                <div className={`${styles.flipCard} ${styles.back}`}>
+                <div className={`${styles.flipCard} ${styles.back}`}  >
                     <h2 className="text-xl font-semibold mb-4">Register Now </h2>
-                    <form className="flex flex-col gap-4 w-full max-w-md">
-                        <input type="text" placeholder="Name" className="p-2 rounded bg-white/10 text-white placeholder-white/70" />
-                        <input type="number" placeholder="Phone" className="p-2 rounded bg-white/10 text-white placeholder-white/70" />
-                        <input type="text" placeholder="Collage" className="p-2 rounded bg-white/10 text-white placeholder-white/70" />
-                      
-                        <input type="text" placeholder="Contribution" className="p-2 rounded bg-white/10 text-white placeholder-white/70" />
+                    <form className="flex flex-col gap-4 w-full max-w-md" onSubmit={(e) => { e.preventDefault(); storeRecord(); }}>
+                        <input required pattern="[a-zA-Z\s]+" title="Seriously😒, Did ur parents name u with number!!" type="text" id="name" placeholder="Name" className="p-2 rounded bg-white/10 text-white placeholder-white/70" />
+                        <input required type="number"id="phone" placeholder="Phone" className="p-2 rounded bg-white/10 text-white placeholder-white/70" />
+                        <input required type="text" id="college" placeholder="College" className="p-2 rounded bg-white/10 text-white placeholder-white/70" /> 
+                        <input required type="text" id="contribution" placeholder="Contribution" className="p-2 rounded bg-white/10 text-white placeholder-white/70" />
                         <button
                             type="submit"
                             className="bg-green-600 hover:bg-green-700 transition px-8 py-2 rounded-full text-lg font-semibold text-white"
@@ -105,4 +104,39 @@ const Timer = ({ value, label }: TimerProps) => {
             </div>
         </div>
     )
+}
+
+
+import { collection, addDoc } from "firebase/firestore"; 
+// @ts-ignore
+import { db } from "../../firebase.js"; 
+
+
+const storeRecord = async () => {
+    try {
+        const name = document.getElementById("name") as HTMLInputElement;
+        const phone = document.getElementById("phone") as HTMLInputElement;
+        const college = document.getElementById("college") as HTMLInputElement;
+        const contribution = document.getElementById("contribution") as HTMLInputElement;
+
+        const record = {
+            name: name.value,
+            phone: phone.value,
+            college: college.value,
+            contribution: contribution.value,
+            timestamp: new Date().toLocaleString()
+        }
+             
+        const docRef = await addDoc(collection( db , "FormData"), record );
+        console.log("Document with Data : "  + JSON.stringify(record) + " \n written with ID: ", docRef.id);
+
+        // alert("Data submitted successfully!");
+        setTimeout(function() {
+            window.location.href = '/';
+        }, 2000); 
+
+
+    } catch (error) {
+        console.error("Error storing record:", error);
+    }
 }
